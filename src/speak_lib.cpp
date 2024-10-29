@@ -27,7 +27,7 @@
 #include "locale.h"
 #include <assert.h>
 #include <time.h>
-
+#include <string>
 #include "speech.h"
 
 #include <sys/stat.h>
@@ -454,9 +454,7 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 		SetVoiceByName("default");
 	}
 
-	std::cout << "Synthesize 0\n";
 	SpeakNextClause(NULL,text,0);
-	std::cout << "Synthesize 1\n";
 
 	if(my_mode == AUDIO_OUTPUT_SYNCH_PLAYBACK)
 	{
@@ -484,20 +482,19 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 	for(;;)
 	{
 #ifdef DEBUG_ENABLED
-		std::cout << "Synthesize 2\n";
 		SHOW("Synthesize > %s\n","for (next)");
 #endif
 		out_ptr = outbuf;
 		out_end = &outbuf[outbuf_size];
 		event_list_ix = 0;
 		WavegenFill(0);
-		std::cout << "Synthesize 3\n";
+
 		length = (out_ptr - outbuf)/2;
 		count_samples += length;
 		event_list[event_list_ix].type = espeakEVENT_LIST_TERMINATED; // indicates end of event list
 		event_list[event_list_ix].unique_identifier = my_unique_identifier;
 		event_list[event_list_ix].user_data = my_user_data;
-		std::cout << "Synthesize 4\n";
+
 		count_buffers++;
 		if (my_mode==AUDIO_OUTPUT_PLAYBACK)
 		{
@@ -506,21 +503,18 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 			if(finished < 0)
 				return EE_INTERNAL_ERROR;
 			length = 0; // the wave data are played once.
-			std::cout << "Synthesize 5\n";
 #endif
 		}
 		else
 		{
-			std::cout << "Synthesize 6\n";
 			finished = synth_callback((short *)outbuf, length, event_list);
-			std::cout << "after synth_callback\n";
 		}
 		if(finished)
-		{	std::cout << "Synthesize 7\n";
+		{
 			SpeakNextClause(NULL,0,2);  // stop
 			break;
 		}
-		std::cout << "Synthesize 8\n";
+
 		if(Generate(phoneme_list,&n_phoneme_list,1)==0)
 		{
 			if(WcmdqUsed() == 0)
@@ -532,7 +526,6 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 				event_list[0].unique_identifier = my_unique_identifier;
 				event_list[0].user_data = my_user_data;
 
-				std::cout << "Synthesize start\n";
 				if(SpeakNextClause(NULL,NULL,1)==0)
 				{
 #ifdef USE_ASYNC
@@ -552,7 +545,6 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 				}
 			}
 		}
-		std::cout << "iter is over\n";
 	}
 	return(EE_OK);
 }  //  end of Synthesize
@@ -757,10 +749,8 @@ void sync_espeak_SetPunctuationList(const wchar_t *punctlist)
 ESPEAK_API void espeak_SetSynthCallback(t_espeak_callback* SynthCallback)
 {//======================================================================
 	ENTER("espeak_SetSynthCallback");
-	std::cout << "espeak_SetSynthCallback 0\n";
 	synth_callback = SynthCallback;
 #ifdef USE_ASYNC
-	std::cout << "espeak_SetSynthCallback 1\n";
 	event_set_callback(synth_callback);
 #endif
 }
@@ -852,9 +842,6 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 				     unsigned int end_position, unsigned int flags,
 				     unsigned int* unique_identifier, void* user_data)
 {//=====================================================================================
-	std::cout << "text:" << text << ";size:" << size << ";position:" << position 
-				<< ";position_type:" << position_type << ";end_position:" << end_position
-				<< ";flags:" << flags << ";unique_identifier:" << unique_identifier << ";user_data:" << user_data << std::endl;
 #ifdef DEBUG_ENABLED
 	ENTER("espeak_Synth");
 	SHOW("espeak_Synth > position=%d, position_type=%d, end_position=%d, flags=%d, user_data=0x%x, text=%s\n", position, position_type, end_position, flags, user_data, text);
@@ -1322,7 +1309,7 @@ char wavefile[200];
 static int SynthCallback1(short *wav, int numsamples, espeak_EVENT *events)
 {//========================================================================
 	char fname[210];
-	std::cout << "in SynthCallback1, quiet:" << quiet << std::endl;
+	//std::cout << "in SynthCallback1, quiet:" << quiet << std::endl;
 	if(quiet) return(0);  // -q quiet mode
 
 	if(wav == NULL)
@@ -1420,7 +1407,7 @@ ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, 
 	synth_flags |= b_value;
 
 	// writing to a file (or no output), we can use synchronous mode
-	std::cout << "AUDIO_OUTPUT_SYNCHRONOUS:" << AUDIO_OUTPUT_SYNCHRONOUS << ";data_path:" << (data_path == NULL) << std::endl;
+	//std::cout << "AUDIO_OUTPUT_SYNCHRONOUS:" << AUDIO_OUTPUT_SYNCHRONOUS << ";data_path:" << (data_path == NULL) << std::endl;
     espeak_Initialize(AUDIO_OUTPUT_SYNCHRONOUS,0,data_path,0);
 	espeak_SetSynthCallback(SynthCallback1);
 
@@ -1434,7 +1421,7 @@ ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, 
 			exit(2);
 		}
 	}
-	std::cout << "flag_compile:" << flag_compile << std::endl;
+	//std::cout << "flag_compile:" << flag_compile << std::endl;
 	if(flag_compile)
 	{
 		// This must be done after the voice is set
@@ -1443,18 +1430,18 @@ ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, 
 	}
 	
 	option_phonemes = 6;
-	std::cout << "option_phonemes:" << option_phonemes << ";option_mbrola_phonemes:" << option_mbrola_phonemes << ";f_phonemes_out:" << f_phonemes_out;
+	//std::cout << "option_phonemes:" << option_phonemes << ";option_mbrola_phonemes:" << option_mbrola_phonemes << ";f_phonemes_out:" << f_phonemes_out;
 	espeak_SetPhonemeTrace(option_phonemes | option_mbrola_phonemes,f_phonemes_out);
 
 	const std::string* text_ptr = *((const std::string**)textptr);
 
 	p_text = (*(std::string*)*textptr).c_str();
-	std::cout << "p_text:" << p_text << std::endl;
+	//std::cout << "p_text:" << p_text << std::endl;
 	if(p_text != NULL)
 	{
 		int size;
 		size = strlen(p_text);
-		std::cout << "start espeak_Synth\n";
+		//std::cout << "start espeak_Synth\n";
 		espeak_Synth(p_text,size+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
 	}
 	

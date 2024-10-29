@@ -1971,7 +1971,7 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control)
 		phon_out = GetTranslatedPhonemeString(phoneme_mode);
 		if(option_phonemes > 0)
 		{
-			fprintf(f_trans,"[!]%s[!]\n",phon_out);
+			fprintf(f_trans,"%s\n",phon_out);
 		}
 		if(phoneme_callback != NULL)
 		{
@@ -1985,27 +1985,22 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control)
 		n_phoneme_list = 0;
 		return(1);
 	}
-	std::cout << "before Generate\n";
+
 	Generate(phoneme_list,&n_phoneme_list,0);
-	std::cout << "after Generate\n";
 	WavegenOpenSound();
-	std::cout << "after WavegenOpenSound\n";
+
 	if(voice_change != NULL)
 	{
-		std::cout << "before LoadVoiceVariant\n";
 		// voice change at the end of the clause (i.e. clause was terminated by a voice change)
 		new_voice = LoadVoiceVariant(voice_change,0); // add a Voice instruction to wavegen at the end of the clause
-		std::cout << "after LoadVoiceVariant\n";
 	}
 
 	if(new_voice)
-	{	
-		std::cout << "before DoVoiceChange\n";
+	{
 		// finished the current clause, now change the voice if there was an embedded
 		// change voice command at the end of it (i.e. clause was broken at the change voice command)
 		DoVoiceChange(voice);
 		new_voice = NULL;
-		std::cout << "after DoVoiceChange\n";
 	}
 
 	return(1);

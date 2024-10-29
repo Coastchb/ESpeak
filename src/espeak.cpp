@@ -683,7 +683,6 @@ int main (int argc, char **argv)
 		}
 	}
 
-	std::cout << "flag_compile:" << flag_compile << std::endl;
 	if(flag_compile)
 	{
 		// This must be done after the voice is set
@@ -708,7 +707,6 @@ int main (int argc, char **argv)
 		espeak_SetParameter(espeakLINELENGTH,option_linelength,0);
 	if(option_punctuation == 2)
 		espeak_SetPunctuationList(option_punctlist);
-	std::cout << "option_phonemes:" << option_phonemes << ";option_mbrola_phonemes:" << option_mbrola_phonemes << ";f_phonemes_out:" << f_phonemes_out;
 	espeak_SetPhonemeTrace(option_phonemes | option_mbrola_phonemes,f_phonemes_out);
 
 	if(filename[0]==0)
@@ -740,15 +738,13 @@ int main (int argc, char **argv)
 		exit(1);
 	}
 
-	//p_text = (*(std::string*)*textptr).c_str();
-	std::cout << "p_text:" << p_text << std::endl;
 
 	if(p_text != NULL)
 	{
 		int size;
 		size = strlen(p_text);
 		espeak_Synth(p_text,size+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
-	}/*
+	}
 	else
 	if(flag_stdin)
 	{
@@ -798,7 +794,7 @@ int main (int argc, char **argv)
 		p_text[filesize]=0;
 		espeak_Synth(p_text,filesize+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
 		fclose(f_text);
-	}*/
+	}
 
 	if(espeak_Synchronize() != EE_OK)
 	{

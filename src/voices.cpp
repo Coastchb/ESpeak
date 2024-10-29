@@ -1836,17 +1836,14 @@ espeak_ERROR SetVoiceByName(const char *name)
 
 	memset(&voice_selector,0,sizeof(voice_selector));
 	voice_selector.name = (char *)name;  // include variant name in voice stack ??
-	std::cout << "voice_selector.name:" << voice_selector.name << std::endl;
+
 	// first check for a voice with this filename
 	// This may avoid the need to call espeak_ListVoices().
 
-	std::cout << "before LoadVoice(buf,1) != NULL:" << (LoadVoice(buf,1) != NULL) << std::endl;
 	if(LoadVoice(buf,1) != NULL)
 	{
-		std::cout << "in LoadVoice(buf,1) != NULL\n";
 		if(variant_name[0] != 0)
 		{
-			std::cout << "LoadVoice(variant_name,2)\n";
 			LoadVoice(variant_name,2);
 		}
 
@@ -1859,16 +1856,12 @@ espeak_ERROR SetVoiceByName(const char *name)
 	if(n_voices_list == 0)
 		espeak_ListVoices(NULL);   // create the voices list
 
-	std::cout << "name:" << name << "; buf:" << buf << std::endl;
-	std::cout << *voices_list << std::endl;
 	if((v = SelectVoiceByName(voices_list,buf)) != NULL)
 	{
-		std::cout << "LoadVoice(v->identifier,0) != NULL\n";
 		if(LoadVoice(v->identifier,0) != NULL)
 		{
 			if(variant_name[0] != 0)
 			{
-				std::cout << "LoadVoice(variant_name,2)\n";
 				LoadVoice(variant_name,2);
 			}
 			DoVoiceChange(voice);
@@ -1877,7 +1870,6 @@ espeak_ERROR SetVoiceByName(const char *name)
 			return(EE_OK);
 		}
 	}
-	std::cout << "SetVoiceByName: error\n";
 	return(EE_INTERNAL_ERROR);   // voice name not found
 }  // end of SetVoiceByName
 

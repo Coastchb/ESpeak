@@ -23,7 +23,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <iostream>
 
 #include <wctype.h>
 #include <wchar.h>
@@ -663,8 +662,7 @@ const char *GetTranslatedPhonemeString(int phoneme_mode)
 
 	use_ipa = phoneme_mode & 0x10;
 	use_tie = phoneme_mode & 0x0f;
-	std::cout << "in GetTranslatedPhonemeString, N_PHON_OUT:" << N_PHON_OUT <<std::endl;
-	std::cout << "in GetTranslatedPhonemeString, phon_out_buf:" << (phon_out_buf == NULL) <<std::endl;
+
 	if(phon_out_buf == NULL)
 	{
 		phon_out_size = N_PHON_OUT;
@@ -674,8 +672,7 @@ const char *GetTranslatedPhonemeString(int phoneme_mode)
 			return("");
 		}
 	}
-	std::cout << "[1]in GetTranslatedPhonemeString, phon_out_buf:" << (phon_out_buf == NULL) <<std::endl;
-	std::cout << "in GetTranslatedPhonemeString, use_tie:" << use_tie <<std::endl;
+
 	if(use_tie >= 3)
 	{
 		// separate individual phonemes with underscores
@@ -683,15 +680,12 @@ const char *GetTranslatedPhonemeString(int phoneme_mode)
 		use_tie = 0;
 	}
 
-	std::cout << "in GetTranslatedPhonemeString, n_phoneme_list:" << n_phoneme_list <<std::endl;
 
 	for(ix=1; ix<(n_phoneme_list-2); ix++)
 	{
 		buf = phon_buf;
 
 		plist = &phoneme_list[ix];
-		std::cout << "in GetTranslatedPhonemeString, plist:" << plist <<std::endl;
-
 
 		WritePhMnemonic(phon_buf2, plist->ph, plist, use_ipa, &flags);
 		if(plist->newword)
@@ -786,7 +780,7 @@ const char *GetTranslatedPhonemeString(int phoneme_mode)
 		phon_out_ix += len;
 	}
 	phon_out_buf[phon_out_ix] = 0;
-	std::cout << "go out GetTranslatedPhonemeString\n";
+
 	return(phon_out_buf);
 }  // end of GetTranslatedPhonemeString
 
