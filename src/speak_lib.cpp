@@ -1363,7 +1363,6 @@ static int SynthCallback1(short *wav, int numsamples, espeak_EVENT *events)
 	return(0);
 }
 
-//int main (int argc, char **argv)
 ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, int phonememode)
 //==============================
 {
@@ -1373,26 +1372,9 @@ ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, 
 	FILE *f_phonemes_out = stdout;
 	char *data_path = NULL;   // use default path for espeak-data
 
-	int option_index = 0;
-	int c;
-	int ix;
 	std::string voice_name = "en-us";
-	int value;
-	int flag_stdin = 0;
-	int flag_compile = 0;
-	int filesize = 0;
-	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
 
-	int volume = -1;
-	int speed = -1;
-	int pitch = -1;
-	int wordgap = -1;
-	int option_capitals = -1;
-	int option_punctuation = -1;
-	int option_phonemes = 0;
-	int option_mbrola_phonemes = 0;
-	int option_linelength = 0;
-	int option_waveout = 0;
+	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
 
 	espeak_VOICE voice_select;
 	char filename[200];
@@ -1406,8 +1388,6 @@ ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, 
 	// input character encoding, 8bit, 16bit, UTF8
 	synth_flags |= b_value;
 
-	// writing to a file (or no output), we can use synchronous mode
-	//std::cout << "AUDIO_OUTPUT_SYNCHRONOUS:" << AUDIO_OUTPUT_SYNCHRONOUS << ";data_path:" << (data_path == NULL) << std::endl;
     espeak_Initialize(AUDIO_OUTPUT_SYNCHRONOUS,0,data_path,0);
 	espeak_SetSynthCallback(SynthCallback1);
 
@@ -1420,13 +1400,6 @@ ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, 
 			fprintf(stderr,"%svoice '%s'\n",err_load,voice_name);
 			exit(2);
 		}
-	}
-	//std::cout << "flag_compile:" << flag_compile << std::endl;
-	if(flag_compile)
-	{
-		// This must be done after the voice is set
-		espeak_CompileDictionary("", stderr, flag_compile & 0x1);
-		exit(0);
 	}
 	
 	option_phonemes = 6;
