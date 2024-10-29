@@ -1,1 +1,4 @@
 /**/*.o
+src/espeak
+src/lib*
+src/speak
