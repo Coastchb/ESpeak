@@ -5,7 +5,7 @@
 #include <unistd.h>
 #endif
 #include "speak_lib.h"
-
+#include <iostream>
 enum t_espeak_type
   {
     ET_TEXT,
@@ -125,7 +125,7 @@ void display_espeak_command(t_espeak_command* the_command);
 
 espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text, size_t size, 
 		      unsigned int position, espeak_POSITION_TYPE position_type, 
-		      unsigned int end_position, unsigned int flags, void* user_data);
+		      unsigned int end_position, unsigned int flags, void* user_data, std::string* output);
 espeak_ERROR sync_espeak_Synth_Mark(unsigned int unique_identifier, const void *text, size_t size, 
 			   const char *index_mark, unsigned int end_position, 
 			   unsigned int flags, void* user_data);

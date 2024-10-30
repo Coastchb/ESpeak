@@ -544,7 +544,7 @@ void process_espeak_command( t_espeak_command* the_command)
 	t_espeak_text* data = &(the_command->u.my_text);
 	sync_espeak_Synth( data->unique_identifier, data->text, data->size,
 			   data->position, data->position_type,
-			   data->end_position, data->flags, data->user_data);
+			   data->end_position, data->flags, data->user_data, NULL);
       }
       break;
 

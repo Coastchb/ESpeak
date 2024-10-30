@@ -27,7 +27,7 @@
 
 #include <stdio.h>
 #include <stddef.h>
-
+#include <iostream>
 #ifdef __WIN32__
 #define ESPEAK_API __declspec(dllexport)
 #else
@@ -280,7 +280,7 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text,
 	unsigned int end_position,
 	unsigned int flags,
 	unsigned int* unique_identifier,
-	void* user_data);
+	void* user_data,std::string*);
 /* Synthesize speech for the specified text.  The speech sound data is passed to the calling
    program in buffers by means of the callback function specified by espeak_SetSynthCallback(). The command is asynchronous: it is internally buffered and returns as soon as possible. If espeak_Initialize was previously called with AUDIO_OUTPUT_PLAYBACK as argument, the sound data are played by eSpeak.
 
@@ -490,6 +490,8 @@ ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream);
 extern "C"
 #endif
 ESPEAK_API const char *espeak_TextToPhonemes(const void **textptr, int textmode, int phonememode);
+ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, int phonememode, std::string* output);
+
 /* Translates text into phonemes.  Call espeak_SetVoiceByName() first, to select a language.
 
    It returns a pointer to a character string which contains the phonemes for the text up to

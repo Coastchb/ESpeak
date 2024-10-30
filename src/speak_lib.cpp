@@ -39,7 +39,7 @@
 #else  /* PLATFORM_POSIX */
 #include <unistd.h>
 #endif
-
+#include <iostream>
 #include "speak_lib.h"
 #include "phoneme.h"
 #include "synthesize.h"
@@ -414,7 +414,7 @@ static int initialise(int control)
 }
 
 
-static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text, int flags)
+static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text, int flags, std::string* output)
 {//========================================================================================
 	// Fill the buffer with output sound
 	int length;
@@ -454,7 +454,7 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 		SetVoiceByName("default");
 	}
 
-	SpeakNextClause(NULL,text,0);
+	SpeakNextClause(NULL,text,0,output);
 
 	if(my_mode == AUDIO_OUTPUT_SYNCH_PLAYBACK)
 	{
@@ -511,7 +511,7 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 		}
 		if(finished)
 		{
-			SpeakNextClause(NULL,0,2);  // stop
+			SpeakNextClause(NULL,0,2,output);  // stop
 			break;
 		}
 
@@ -526,7 +526,7 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 				event_list[0].unique_identifier = my_unique_identifier;
 				event_list[0].user_data = my_user_data;
 
-				if(SpeakNextClause(NULL,NULL,1)==0)
+				if(SpeakNextClause(NULL,NULL,1,output)==0)
 				{
 #ifdef USE_ASYNC
 					if (my_mode==AUDIO_OUTPUT_PLAYBACK)
@@ -616,7 +616,7 @@ void MarkerEvent(int type, unsigned int char_position, int value, int value2, un
 
 espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text, size_t size,
 		      unsigned int position, espeak_POSITION_TYPE position_type,
-		      unsigned int end_position, unsigned int flags, void* user_data)
+		      unsigned int end_position, unsigned int flags, void* user_data, std::string* output)
 {//===========================================================================
 
 #ifdef DEBUG_ENABLED
@@ -653,7 +653,7 @@ espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text,
 
 	end_character_position = end_position;
 
-	aStatus = Synthesize(unique_identifier, text, flags);
+	aStatus = Synthesize(unique_identifier, text, flags, output);
 	#ifdef USE_ASYNC
 	wave_flush(my_audio);
 	#endif
@@ -685,7 +685,7 @@ espeak_ERROR sync_espeak_Synth_Mark(unsigned int unique_identifier, const void *
 	end_character_position = end_position;
 
 
-	aStatus = Synthesize(unique_identifier, text, flags | espeakSSML);
+	aStatus = Synthesize(unique_identifier, text, flags | espeakSSML,NULL);
 	SHOW_TIME("LEAVE sync_espeak_Synth_Mark");
 
 	return (aStatus);
@@ -709,7 +709,7 @@ void sync_espeak_Key(const char *key)
 
 	my_unique_identifier = 0;
 	my_user_data = NULL;
-	Synthesize(0, key,0);   // speak key as a text string
+	Synthesize(0, key,0,NULL);   // speak key as a text string
 }
 
 
@@ -721,7 +721,7 @@ void sync_espeak_Char(wchar_t character)
 	my_user_data = NULL;
 
 	sprintf(buf,"<say-as interpret-as=\"tts:char\">&#%d;</say-as>",character);
-	Synthesize(0, buf,espeakSSML);
+	Synthesize(0, buf,espeakSSML,NULL);
 }
 
 
@@ -840,7 +840,7 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 				     unsigned int position,
 				     espeak_POSITION_TYPE position_type,
 				     unsigned int end_position, unsigned int flags,
-				     unsigned int* unique_identifier, void* user_data)
+				     unsigned int* unique_identifier, void* user_data, std::string* output=NULL)
 {//=====================================================================================
 #ifdef DEBUG_ENABLED
 	ENTER("espeak_Synth");
@@ -864,7 +864,7 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 
 	if(synchronous_mode)
 	{
-		return(sync_espeak_Synth(0,text,size,position,position_type,end_position,flags,user_data));
+		return(sync_espeak_Synth(0,text,size,position,position_type,end_position,flags,user_data,output));
 	}
 
 #ifdef USE_ASYNC
@@ -1294,7 +1294,6 @@ ESPEAK_API const char *espeak_Info(const char **ptr)
 	return(version_string);
 }
 
-
 //int samplerate;
 int quiet = 1;
 unsigned int samples_total = 0;
@@ -1305,6 +1304,13 @@ unsigned int wavefile_count = 0;
 FILE *f_wavfile = NULL;
 char filetype[5];
 char wavefile[200];
+
+const char* final_output_str = "";
+static int FianlCallback(const char* output) {
+	std::cout << "in FianlCallback:" << output << std::endl;
+	//final_output_str = output;
+	return(0);
+}
 
 static int SynthCallback1(short *wav, int numsamples, espeak_EVENT *events)
 {//========================================================================
@@ -1363,7 +1369,7 @@ static int SynthCallback1(short *wav, int numsamples, espeak_EVENT *events)
 	return(0);
 }
 
-ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, int phonememode)
+ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, int phonememode, std::string* output)
 //==============================
 {
 	static const char* err_load = "Failed to read ";
@@ -1377,12 +1383,7 @@ ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, 
 	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
 
 	espeak_VOICE voice_select;
-	char filename[200];
-#define N_PUNCTLIST  100
-	wchar_t option_punctlist[N_PUNCTLIST];
-
-	filename[0] = 0;
-	option_punctlist[0] = 0;
+	//char* final_output = 0;
 
 	int b_value = 1;
 	// input character encoding, 8bit, 16bit, UTF8
@@ -1390,6 +1391,7 @@ ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, 
 
     espeak_Initialize(AUDIO_OUTPUT_SYNCHRONOUS,0,data_path,0);
 	espeak_SetSynthCallback(SynthCallback1);
+	//espeak_SetPhonemeCallback(FianlCallback);
 
 	if(espeak_SetVoiceByName(voice_name.c_str()) != EE_OK)
 	{
@@ -1415,7 +1417,8 @@ ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, 
 		int size;
 		size = strlen(p_text);
 		//std::cout << "start espeak_Synth\n";
-		espeak_Synth(p_text,size+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+		espeak_Synth(p_text,size+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL,output);
+		//output = final_output_str;
 	}
 	
 	if(espeak_Synchronize() != EE_OK)

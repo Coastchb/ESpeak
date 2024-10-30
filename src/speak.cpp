@@ -461,7 +461,7 @@ static void StopSpeak(int unused)
 	// DEBUG
 //	printf("\n*** Interrupting speech output (use Ctrl-D to actually quit).\n");
 	fflush(stdout);
-	SpeakNextClause(NULL,NULL,5);
+	SpeakNextClause(NULL,NULL,5,NULL);
 	signal(SIGINT,StopSpeak);
 }  //  end of StopSpeak()
 
@@ -877,7 +877,7 @@ int main (int argc, char **argv)
 		}
 
 		InitText(0);
-		SpeakNextClause(f_text,p_text,0);
+		SpeakNextClause(f_text,p_text,0,NULL);
 
 		ix = 1;
 		for(;;)
@@ -890,7 +890,7 @@ int main (int argc, char **argv)
 
 			if(Generate(phoneme_list,&n_phoneme_list,1)==0)
 			{
-				ix = SpeakNextClause(NULL,NULL,1);
+				ix = SpeakNextClause(NULL,NULL,1,NULL);
 			}
 		}
 
@@ -905,11 +905,11 @@ int main (int argc, char **argv)
 		WavegenInitSound();
 
 		InitText(0);
-		SpeakNextClause(f_text,p_text,0);
+		SpeakNextClause(f_text,p_text,0,NULL);
 
 		if(option_quiet)
 		{
-			while(SpeakNextClause(NULL,NULL,1) != 0);
+			while(SpeakNextClause(NULL,NULL,1,NULL) != 0);
 			return(0);
 		}
 

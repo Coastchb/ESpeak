@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
+#include <iostream>
 #include "speak_lib.h"
 #include "speech.h"
 #include "phoneme.h"
@@ -1858,7 +1858,7 @@ int SynthStatus()
 
 
 
-int SpeakNextClause(FILE *f_in, const void *text_in, int control)
+int SpeakNextClause(FILE *f_in, const void *text_in, int control,  std::string* output)
 {//==============================================================
 // Speak text from file (f_in) or memory (text_in)
 // control 0: start
@@ -1972,6 +1972,9 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control)
 		if(option_phonemes > 0)
 		{
 			fprintf(f_trans,"%s\n",phon_out);
+			if (output != NULL) {
+				*output = *output + phon_out;
+			}
 		}
 		if(phoneme_callback != NULL)
 		{
@@ -1985,7 +1988,7 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control)
 		n_phoneme_list = 0;
 		return(1);
 	}
-
+	//std::cout << "Generate\n";
 	Generate(phoneme_list,&n_phoneme_list,0);
 	WavegenOpenSound();
 

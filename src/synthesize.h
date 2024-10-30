@@ -17,6 +17,7 @@
  *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
+#include <iostream>
 #define espeakINITIALIZE_PHONEME_IPA   0x0002   // move this to speak_lib.h, after eSpeak version 1.46.02
 
 
@@ -523,7 +524,7 @@ void SynthesizeInit(void);
 int  Generate(PHONEME_LIST *phoneme_list, int *n_ph, int resume);
 void MakeWave2(PHONEME_LIST *p, int n_ph);
 int  SynthOnTimer(void);
-int  SpeakNextClause(FILE *f_text, const void *text_in, int control);
+int  SpeakNextClause(FILE *f_text, const void *text_in, int control,  std::string* output=NULL);
 int  SynthStatus(void);
 void SetSpeed(int control);
 void SetEmbedded(int control, int value);

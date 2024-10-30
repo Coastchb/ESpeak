@@ -743,7 +743,7 @@ int main (int argc, char **argv)
 	{
 		int size;
 		size = strlen(p_text);
-		espeak_Synth(p_text,size+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+		espeak_Synth(p_text,size+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL,NULL);
 	}
 	else
 	if(flag_stdin)
@@ -757,7 +757,7 @@ int main (int argc, char **argv)
 			while(fgets(p_text,max,stdin) != NULL)
 			{
 				p_text[max-1] = 0;
-				espeak_Synth(p_text,max,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+				espeak_Synth(p_text,max,0,POS_CHARACTER,0,synth_flags,NULL,NULL,NULL);
 
 			}
 		}
@@ -777,7 +777,7 @@ int main (int argc, char **argv)
 			if(ix > 0)
 			{
 				p_text[ix-1] = 0;
-				espeak_Synth(p_text,ix+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+				espeak_Synth(p_text,ix+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL,NULL);
 			}
 		}
 	}
@@ -792,7 +792,7 @@ int main (int argc, char **argv)
 
 		fread(p_text,1,filesize,f_text);
 		p_text[filesize]=0;
-		espeak_Synth(p_text,filesize+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+		espeak_Synth(p_text,filesize+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL,NULL);
 		fclose(f_text);
 	}
 
