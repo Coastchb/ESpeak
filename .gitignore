@@ -2,3 +2,7 @@
 src/espeak
 src/lib*
 src/speak
+./src/espeak
+./src/speak
+./src/libespeak.a
+./src/libespeak.so*

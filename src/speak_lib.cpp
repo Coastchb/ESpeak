@@ -455,6 +455,9 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 	}
 
 	SpeakNextClause(NULL,text,0,output);
+	//*output = "ˈoʊ";
+
+	/*
 
 	if(my_mode == AUDIO_OUTPUT_SYNCH_PLAYBACK)
 	{
@@ -545,7 +548,7 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 				}
 			}
 		}
-	}
+	}*/
 	return(EE_OK);
 }  //  end of Synthesize
 
@@ -866,6 +869,7 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 	{
 		return(sync_espeak_Synth(0,text,size,position,position_type,end_position,flags,user_data,output));
 	}
+
 
 #ifdef USE_ASYNC
 	// Create the text command
@@ -1369,25 +1373,16 @@ static int SynthCallback1(short *wav, int numsamples, espeak_EVENT *events)
 	return(0);
 }
 
-ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, int phonememode, std::string* output)
-//==============================
-{
+ESPEAK_API void espeak_init() {
 	static const char* err_load = "Failed to read ";
-	FILE *f_text=NULL;
-	const char *p_text=NULL;
+	
 	FILE *f_phonemes_out = stdout;
 	char *data_path = NULL;   // use default path for espeak-data
 
 	std::string voice_name = "en-us";
 
-	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
-
 	espeak_VOICE voice_select;
 	//char* final_output = 0;
-
-	int b_value = 1;
-	// input character encoding, 8bit, 16bit, UTF8
-	synth_flags |= b_value;
 
     espeak_Initialize(AUDIO_OUTPUT_SYNCHRONOUS,0,data_path,0);
 	espeak_SetSynthCallback(SynthCallback1);
@@ -1407,18 +1402,31 @@ ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, 
 	option_phonemes = 6;
 	//std::cout << "option_phonemes:" << option_phonemes << ";option_mbrola_phonemes:" << option_mbrola_phonemes << ";f_phonemes_out:" << f_phonemes_out;
 	espeak_SetPhonemeTrace(option_phonemes | option_mbrola_phonemes,f_phonemes_out);
+}
 
+ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, std::string* output)
+//==============================
+{
+	//int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
+	//int b_value = 1;
+	//synth_flags |= b_value;
+	
+	int synth_flags = 4353;
+
+	FILE *f_text=NULL;
+	FILE *f_phonemes_out = stdout;
+	const char *p_text=NULL;
 	const std::string* text_ptr = *((const std::string**)textptr);
 
 	p_text = (*(std::string*)*textptr).c_str();
 	//std::cout << "p_text:" << p_text << std::endl;
+	
+	
 	if(p_text != NULL)
 	{
 		int size;
 		size = strlen(p_text);
-		//std::cout << "start espeak_Synth\n";
 		espeak_Synth(p_text,size+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL,output);
-		//output = final_output_str;
 	}
 	
 	if(espeak_Synchronize() != EE_OK)

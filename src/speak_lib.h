@@ -490,8 +490,8 @@ ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream);
 extern "C"
 #endif
 ESPEAK_API const char *espeak_TextToPhonemes(const void **textptr, int textmode, int phonememode);
-ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, int textmode, int phonememode, std::string* output);
-
+ESPEAK_API const char *espeak_Text2Phonemes(const void **textptr, std::string* output);
+ESPEAK_API void espeak_init();
 /* Translates text into phonemes.  Call espeak_SetVoiceByName() first, to select a language.
 
    It returns a pointer to a character string which contains the phonemes for the text up to

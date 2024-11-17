@@ -1982,7 +1982,7 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control,  std::string* 
 		}
 	}
 
-
+	/*
 	if(skipping_text)
 	{
 		n_phoneme_list = 0;
@@ -2004,7 +2004,7 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control,  std::string* 
 		// change voice command at the end of it (i.e. clause was broken at the change voice command)
 		DoVoiceChange(voice);
 		new_voice = NULL;
-	}
+	}*/
 
 	return(1);
 }  //  end of SpeakNextClause
