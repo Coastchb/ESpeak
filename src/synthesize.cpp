@@ -1971,7 +1971,7 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control,  std::string* 
 		phon_out = GetTranslatedPhonemeString(phoneme_mode);
 		if(option_phonemes > 0)
 		{
-			//fprintf(f_trans,"%s\n",phon_out);
+			fprintf(f_trans,"%s\n",phon_out);
 			if (output != NULL) {
 				*output = *output + phon_out;
 			}
